@@ -1,4 +1,4 @@
-import type { PdfSource, ReadingDirection, SourceRequestOptions } from "../types";
+import type { PdfSource, ReadingDirection, SourceRequestOptions } from "../types.js";
 /**
  * Optional host logic: reading direction from a PDF's own metadata.
  *

@@ -82,50 +82,74 @@ for (const [label, app] of [
   check(built.some((name) => /\.css$/.test(name)), `${label} build emitted the stylesheet`);
 }
 
-// TypeScript sees the declarations through the package's export map.
-const typeProbe = path.join(viteApp, "type-probe.ts");
-fs.writeFileSync(
-  typeProbe,
+// TypeScript sees the declarations through the package's export map, under
+// each way a consumer may resolve modules. skipLibCheck stays on, as it is in
+// most projects: it hides a broken declaration, so every probe also has a
+// line that must be an error. If an export has silently become `any`, that
+// line stops being one and the unused @ts-expect-error fails the probe.
+const typecheck = (label, filename, lines, moduleOptions) => {
+  const probe = path.join(viteApp, filename);
+  fs.writeFileSync(probe, `${lines.join("\n")}\n`);
+  try {
+    execFileSync(
+      process.execPath,
+      [
+        path.join(root, "node_modules", "typescript", "bin", "tsc"),
+        "--noEmit",
+        "--strict",
+        "--skipLibCheck",
+        ...moduleOptions,
+        "--target",
+        "ES2022",
+        "--lib",
+        "ES2022,DOM",
+        "--jsx",
+        "react-jsx",
+        probe,
+      ],
+      { cwd: viteApp, stdio: "pipe" },
+    );
+    check(true, `declarations typecheck from a consumer (${label})`);
+  } catch (error) {
+    check(false, `declarations typecheck from a consumer (${label}): ${error.stdout?.toString().slice(0, 600)}`);
+  } finally {
+    fs.rmSync(probe, { force: true });
+  }
+};
+const staticProbe = [
+  'import { FlipBook, createFlipbook, detectPdfDirection, type FlipBookHandle, type FlipBookProps, type FlipBookSource, type ReadingDirection, type ReadyEvent } from "flipdocs4";',
+  'import { createFlipbook as coreCreate } from "flipdocs4/core";',
+  'const source: FlipBookSource = { type: "pdf", src: "a.pdf" };',
+  'const direction: ReadingDirection = "rtl";',
+  "const props: FlipBookProps = { source, direction, onReady: (event: ReadyEvent) => event.pageAspect };",
+  "declare const handle: FlipBookHandle;",
+  "handle.goToPage(3);",
+  'const detected: Promise<ReadingDirection> = detectPdfDirection("a.pdf");',
+  "// @ts-expect-error a function is not a number",
+  "const mistyped: number = createFlipbook;",
+  "// @ts-expect-error nor is the one from the framework-neutral entry",
+  "const mistypedCore: number = coreCreate;",
+  "export { FlipBook, createFlipbook, coreCreate, props, detected, mistyped, mistypedCore };",
+];
+typecheck("bundler resolution", "type-probe.ts", staticProbe, ["--module", "ESNext", "--moduleResolution", "Bundler"]);
+typecheck("Node16 resolution, ES module", "type-probe-node16.mts", staticProbe, ["--module", "Node16", "--moduleResolution", "Node16"]);
+// A CommonJS project (a Medusa backend, for one) can only reach an ESM-only
+// package through a dynamic import.
+typecheck(
+  "Node16 resolution, CommonJS",
+  "type-probe-node16.cts",
   [
-    'import { FlipBook, createFlipbook, type FlipBookHandle, type FlipBookProps, type FlipBookSource, type ReadingDirection, type ReadyEvent } from "flipdocs4";',
-    'import { createFlipbook as coreCreate } from "flipdocs4/core";',
-    'const source: FlipBookSource = { type: "pdf", src: "a.pdf" };',
-    'const direction: ReadingDirection = "rtl";',
-    "const props: FlipBookProps = { source, direction, onReady: (event: ReadyEvent) => event.pageAspect };",
-    "declare const handle: FlipBookHandle;",
-    "handle.goToPage(3);",
-    "export { FlipBook, createFlipbook, coreCreate, props };",
-    "",
-  ].join("\n"),
+    "async function load() {",
+    '  const mod = await import("flipdocs4");',
+    '  const detected: Promise<"ltr" | "rtl"> = mod.detectPdfDirection("a.pdf");',
+    "  // @ts-expect-error a function is not a number",
+    "  const mistyped: number = mod.createFlipbook;",
+    "  return { reader: mod.FlipBook, detected, mistyped };",
+    "}",
+    "export = load;",
+  ],
+  ["--module", "Node16", "--moduleResolution", "Node16"],
 );
-try {
-  execFileSync(
-    process.execPath,
-    [
-      path.join(root, "node_modules", "typescript", "bin", "tsc"),
-      "--noEmit",
-      "--strict",
-      "--skipLibCheck",
-      "--module",
-      "ESNext",
-      "--moduleResolution",
-      "Bundler",
-      "--target",
-      "ES2022",
-      "--lib",
-      "ES2022,DOM",
-      "--jsx",
-      "react-jsx",
-      typeProbe,
-    ],
-    { cwd: viteApp, stdio: "pipe" },
-  );
-  check(true, "declarations typecheck from a consumer");
-} catch (error) {
-  check(false, `declarations typecheck from a consumer: ${error.stdout?.toString().slice(0, 600)}`);
-} finally {
-  fs.rmSync(typeProbe, { force: true });
-}
 
 // 3. Open both in a browser.
 if (!flags.has("--skip-browser")) {

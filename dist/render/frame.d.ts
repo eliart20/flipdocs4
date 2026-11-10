@@ -1,6 +1,6 @@
-import type { PageSurface } from "../cache/surfaceCache";
-import type { FoldState } from "../core/fold";
-import type { Camera, ViewLayout } from "../core/layout";
+import type { PageSurface } from "../cache/surfaceCache.js";
+import type { FoldState } from "../core/fold.js";
+import type { Camera, ViewLayout } from "../core/layout.js";
 /** Everything a renderer needs to draw one frame. Built by the engine. */
 export interface SlotFrame {
     /** A page belongs in this slot (it may still be loading). */

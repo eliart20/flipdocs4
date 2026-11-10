@@ -1,5 +1,5 @@
-import type { SurfaceImage } from "../cache/surfaceCache";
-import type { OutlineNode, PageLink, PageText, ReadingDirection, SourceCapabilities, SourceRequestOptions } from "../types";
+import type { SurfaceImage } from "../cache/surfaceCache.js";
+import type { OutlineNode, PageLink, PageText, ReadingDirection, SourceCapabilities, SourceRequestOptions } from "../types.js";
 /**
  * What the engine needs from a document, whatever it is made of. A source
  * only produces rasters and metadata; scheduling, caching and ownership of

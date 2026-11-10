@@ -1,4 +1,4 @@
-import type { FlipRenderer, FrameState } from "./frame";
+import type { FlipRenderer, FrameState } from "./frame.js";
 /**
  * The non-curl reader: the same layout, zoom and pan drawn with Canvas 2D.
  * It is used when WebGL is unavailable or its context is lost, and can be

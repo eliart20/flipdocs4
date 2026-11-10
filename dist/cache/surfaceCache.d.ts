@@ -1,4 +1,4 @@
-import type { CacheSnapshot } from "../types";
+import type { CacheSnapshot } from "../types.js";
 /**
  * Rendered page surfaces: a bounded LRU with pinning and byte accounting.
  *

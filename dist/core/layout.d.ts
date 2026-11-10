@@ -1,5 +1,5 @@
-import type { PageDims } from "./fold";
-import type { ViewMode } from "./spreads";
+import type { PageDims } from "./fold.js";
+import type { ViewMode } from "./spreads.js";
 /**
  * Where the book sits in the reader, in one place, so the WebGL renderer, the
  * non-curl reader, pointer mapping and the DOM overlays all agree.

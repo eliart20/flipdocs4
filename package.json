@@ -42,7 +42,7 @@
   ],
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
-    "build": "vite build && vite build --config vite.workers.config.ts && node build/postbuild.mjs && tsc -p tsconfig.build.json",
+    "build": "vite build && vite build --config vite.workers.config.ts && node build/postbuild.mjs && tsc -p tsconfig.build.json && node build/fix-declarations.mjs",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "audit:dist": "node build/audit-dist.mjs",

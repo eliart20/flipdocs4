@@ -1,5 +1,5 @@
-import type { PageSurface } from "../cache/surfaceCache";
-import type { FlipRenderer, FrameState, RendererHooks } from "./frame";
+import type { PageSurface } from "../cache/surfaceCache.js";
+import type { FlipRenderer, FrameState, RendererHooks } from "./frame.js";
 export declare class WebGLFlipRenderer implements FlipRenderer {
     private readonly hooks;
     readonly kind: "webgl";

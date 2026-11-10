@@ -1,4 +1,4 @@
-import type { FlipBookSource, FlipbookInstance } from "./types";
+import type { FlipBookSource, FlipbookInstance } from "./types.js";
 declare class FlipBookElement extends HTMLElement {
     static observedAttributes: string[];
     private instance;
@@ -14,5 +14,5 @@ declare class FlipBookElement extends HTMLElement {
     disconnectedCallback(): void;
     attributeChangedCallback(name: string, previous: string | null, next: string | null): void;
 }
-export * from "./core";
+export * from "./core.js";
 export { FlipBookElement };

@@ -1,5 +1,5 @@
-import type { PageText, SearchMatch } from "../types";
-import type { ResolvedSearchOptions } from "./searchIndex";
+import type { PageText, SearchMatch } from "../types.js";
+import type { ResolvedSearchOptions } from "./searchIndex.js";
 export type SearchWorkerRequest = {
     type: "index";
     page: number;

@@ -82,6 +82,31 @@ if (/from\s*["']react/.test(text["core.js"]) || [...staticImports("core.js")].so
 
 const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
 const build = JSON.parse(fs.readFileSync(path.join(dist, "flipdocs.build.json"), "utf8"));
+
+// Declarations must name every relative file in full. Node16 and NodeNext
+// consumers read the package as ESM; an extensionless specifier resolves to
+// nothing there, and with skipLibCheck nobody is told.
+const declarationFiles = (dir, out = []) => {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) declarationFiles(full, out);
+    else if (entry.name.endsWith(".d.ts")) out.push(full);
+  }
+  return out;
+};
+for (const file of declarationFiles(dist)) {
+  const label = path.relative(root, file).replace(/\\/g, "/");
+  const source = fs.readFileSync(file, "utf8");
+  if (/^import\s+["'][^"']*\.css["']/m.test(source)) fail(`${label}: stylesheet import in a declaration`);
+  for (const match of source.matchAll(/(?:\bfrom\s*|\bimport\s*\(\s*)["'](\.{1,2}(?:\/[^"']*)?)["']/g)) {
+    const specifier = match[1];
+    if (!specifier.endsWith(".js")) {
+      fail(`${label}: "${specifier}" has no file extension`);
+    } else if (!fs.existsSync(path.resolve(path.dirname(file), specifier.replace(/\.js$/, ".d.ts")))) {
+      fail(`${label}: "${specifier}" has no declaration file`);
+    }
+  }
+}
 if (build.pdfjs !== pkg.devDependencies["pdfjs-dist"]) fail("bundled pdfjs-dist differs from the pinned version");
 if (build.three !== pkg.devDependencies.three) fail("bundled three differs from the pinned version");
 

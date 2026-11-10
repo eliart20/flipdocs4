@@ -1,4 +1,4 @@
-import type { ReadingDirection } from "../types";
+import type { ReadingDirection } from "../types.js";
 /**
  * Page and spread arithmetic. Public page numbers are 1-based physical source
  * pages. Spread 0 holds only page 1 (the cover); spread k ≥ 1 holds pages 2k

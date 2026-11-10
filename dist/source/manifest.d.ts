@@ -1,4 +1,4 @@
-import type { ManifestImageVariant, OutlineNode, PageLink, PageText, ReadingDirection } from "../types";
+import type { ManifestImageVariant, OutlineNode, PageLink, PageText, ReadingDirection } from "../types.js";
 export declare const MANIFEST_LIMITS: {
     maxBytes: number;
     maxPages: number;

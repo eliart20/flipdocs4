@@ -1,4 +1,4 @@
-import type { FoldState, FoldTuning, PageDims } from "./fold";
+import type { FoldState, FoldTuning, PageDims } from "./fold.js";
 /**
  * Automatic turns. A path says where the grabbed point is for a path
  * parameter τ in [0, 1]; the fold solver does the rest, so toolbar turns,

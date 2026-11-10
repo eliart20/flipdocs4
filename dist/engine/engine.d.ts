@@ -1,10 +1,10 @@
-import type { CssRect } from "../core/layout";
-import type { Side, ViewMode } from "../core/spreads";
-import type { Corner } from "../core/trajectory";
-import { FlipBookError } from "../errors";
-import type { PageSource } from "../source/pageSource";
-import type { BenchmarkMode, BenchmarkResult, DiagnosticPose, FlipBookSnapshot, FlipBookSource, FlipBookTuning, LayoutPolicy, NavigationResult, PageChangeEvent, PageSizing, ReadingDirection, ReadyEvent, ReducedMotionPolicy, SpineOptions, TransitionKind } from "../types";
-import { PageStore } from "./pageStore";
+import type { CssRect } from "../core/layout.js";
+import type { Side, ViewMode } from "../core/spreads.js";
+import type { Corner } from "../core/trajectory.js";
+import { FlipBookError } from "../errors.js";
+import type { PageSource } from "../source/pageSource.js";
+import type { BenchmarkMode, BenchmarkResult, DiagnosticPose, FlipBookSnapshot, FlipBookSource, FlipBookTuning, LayoutPolicy, NavigationResult, PageChangeEvent, PageSizing, ReadingDirection, ReadyEvent, ReducedMotionPolicy, SpineOptions, TransitionKind } from "../types.js";
+import { PageStore } from "./pageStore.js";
 /**
  * The reader's engine: owns the canvas, the document, the page caches and all
  * motion. It has no toolbar and no framework; the viewer wraps it with

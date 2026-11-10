@@ -1,5 +1,5 @@
-import type { OutlineNode, PageText } from "../types";
-import type { HostCallbacks, HostDocumentInfo, HostErrorPayload, HostOpenParams, HostRenderParams, HostRenderResult, RawLink } from "./protocol";
+import type { OutlineNode, PageText } from "../types.js";
+import type { HostCallbacks, HostDocumentInfo, HostErrorPayload, HostOpenParams, HostRenderParams, HostRenderResult, RawLink } from "./protocol.js";
 export declare function describeHostError(error: unknown, phase: "open" | "render" | "data"): HostErrorPayload;
 export declare class PdfHost {
     private readonly callbacks;

@@ -1,4 +1,4 @@
-import type { FlipBookHandle } from "../types";
+import type { FlipBookHandle } from "../types.js";
 /**
  * React component. React owns the root element's lifetime, class and props;
  * the viewer owns everything inside it. The engine is created in an effect
@@ -7,4 +7,4 @@ import type { FlipBookHandle } from "../types";
  * `source` reloads when its identity changes: memoize it. `startPage` is read
  * once, when the engine mounts; navigate later through the ref.
  */
-export declare const FlipBook: import("react").ForwardRefExoticComponent<import("..").FlipBookOptions & import("react").RefAttributes<FlipBookHandle>>;
+export declare const FlipBook: import("react").ForwardRefExoticComponent<import("../index.js").FlipBookOptions & import("react").RefAttributes<FlipBookHandle>>;

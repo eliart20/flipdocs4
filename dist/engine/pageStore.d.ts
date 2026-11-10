@@ -1,7 +1,7 @@
-import type { RasterQueue } from "../cache/rasterQueue";
-import type { PageSurface, SurfaceCache } from "../cache/surfaceCache";
-import type { PageSource, ThumbnailResult } from "../source/pageSource";
-import type { PageText } from "../types";
+import type { RasterQueue } from "../cache/rasterQueue.js";
+import type { PageSurface, SurfaceCache } from "../cache/surfaceCache.js";
+import type { PageSource, ThumbnailResult } from "../source/pageSource.js";
+import type { PageText } from "../types.js";
 export interface PageStoreHooks {
     /** A new or sharper surface for `page` is in the cache. */
     onSurface(page: number): void;

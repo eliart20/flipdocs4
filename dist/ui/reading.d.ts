@@ -1,4 +1,4 @@
-import type { FlipBookStrings, PageText } from "../types";
+import type { FlipBookStrings, PageText } from "../types.js";
 /**
  * Text view: the active pages as real, stable text in reading order, with no
  * animation. While it is open the canvas is hidden from assistive technology,

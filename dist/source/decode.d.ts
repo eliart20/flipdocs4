@@ -1,4 +1,4 @@
-import type { SurfaceImage } from "../cache/surfaceCache";
+import type { SurfaceImage } from "../cache/surfaceCache.js";
 /**
  * Image decoding to bounded surfaces. Pages are decoded with
  * createImageBitmap, which runs off the main thread, and are scaled down to

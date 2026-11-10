@@ -1,4 +1,4 @@
-import type { DiagnosticPose } from "../types";
+import type { DiagnosticPose } from "../types.js";
 /**
  * Deterministic diagnostic poses. Each is a grab and a target in normalized
  * material coordinates (u and x in page widths from the binding, v and y in

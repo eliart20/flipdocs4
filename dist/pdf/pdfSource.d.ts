@@ -1,6 +1,6 @@
-import { FlipBookError } from "../errors";
-import type { PageSource, SourceOpenContext } from "../source/pageSource";
-import type { PdfSource } from "../types";
+import { FlipBookError } from "../errors.js";
+import type { PageSource, SourceOpenContext } from "../source/pageSource.js";
+import type { PdfSource } from "../types.js";
 export interface PdfPageSource extends PageSource {
     /** Set by the engine; called when the open document becomes unusable. */
     onFatal?: (error: FlipBookError) => void;

@@ -1,4 +1,4 @@
-import type { FlipBookTuning } from "./types";
+import type { FlipBookTuning } from "./types.js";
 interface Range {
     min: number;
     max: number;

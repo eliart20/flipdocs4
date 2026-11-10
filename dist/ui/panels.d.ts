@@ -1,5 +1,5 @@
-import type { FlipEngine } from "../engine/engine";
-import type { FlipBookStrings, SearchHandle, SearchMatch, SearchOptions, SearchProgress } from "../types";
+import type { FlipEngine } from "../engine/engine.js";
+import type { FlipBookStrings, SearchHandle, SearchMatch, SearchOptions, SearchProgress } from "../types.js";
 /**
  * The side drawer: page thumbnails, the table of contents and search. Lists
  * are virtualized or capped, so a 2,000-page book costs a few dozen DOM

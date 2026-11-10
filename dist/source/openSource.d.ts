@@ -1,5 +1,5 @@
-import type { FlipBookSource } from "../types";
-import type { PageSource, SourceOpenContext } from "./pageSource";
+import type { FlipBookSource } from "../types.js";
+import type { PageSource, SourceOpenContext } from "./pageSource.js";
 /**
  * Open any supported source. Each kind is behind its own dynamic import, so
  * an image book never downloads the PDF code and a PDF never downloads the

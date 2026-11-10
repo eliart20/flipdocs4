@@ -31,6 +31,7 @@ node tests/consumers/run.mjs            # pack, install into outside apps, build
 | Browser acceptance cases (`demo/selftest.ts`) | 32 pass, 0 skipped |
 | Real input (`tests/browser/interaction.mjs`) | 46 pass |
 | Consumer builds (`tests/consumers/run.mjs`) | all pass: Vite 7 + React 19, Vite 5 + React 18, script tag with no bundler |
+| Declarations from a consumer (same script) | pass under bundler resolution and under Node16 resolution, from an ES module and from CommonJS through a dynamic import |
 | Next.js 15.5.18 | opens with both workers under webpack (`next build` + `next start`) and Turbopack (`next dev --turbopack`); checked by hand with a scratch app, not part of the scripts |
 | Dist audit (`build/audit-dist.mjs`) | pass |
 

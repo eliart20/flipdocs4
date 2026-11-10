@@ -1,5 +1,5 @@
-import type { FlipEngine } from "../engine/engine";
-import type { PageText, SearchMatch } from "../types";
+import type { FlipEngine } from "../engine/engine.js";
+import type { PageText, SearchMatch } from "../types.js";
 export declare class PageOverlay {
     private readonly engine;
     private readonly goToPage;

@@ -1,4 +1,4 @@
-import type { SourceRequestOptions } from "../types";
+import type { SourceRequestOptions } from "../types.js";
 /**
  * Byte-range access to a PDF on the network.
  *

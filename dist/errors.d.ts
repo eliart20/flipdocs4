@@ -1,4 +1,4 @@
-import type { FlipBookErrorCode } from "./types";
+import type { FlipBookErrorCode } from "./types.js";
 /**
  * Every error the reader reports is an ordinary Error with a stable `code`,
  * so existing `onError(error => error.message)` handlers keep working.

@@ -1,4 +1,4 @@
-import type { BenchmarkMode, BenchmarkResult, DiagnosticPose, FlipBookSnapshot, FlipBookSource, FlipBookTuning, FlipbookCreateOptions, FlipbookEventMap, FlipbookInstance, FlipbookState, NavigationResult, OutlineNode, PageText, ReadyEvent, SearchHandle, SearchMatch, SearchOptions, SearchProgress } from "../types";
+import type { BenchmarkMode, BenchmarkResult, DiagnosticPose, FlipBookSnapshot, FlipBookSource, FlipBookTuning, FlipbookCreateOptions, FlipbookEventMap, FlipbookInstance, FlipbookState, NavigationResult, OutlineNode, PageText, ReadyEvent, SearchHandle, SearchMatch, SearchOptions, SearchProgress } from "../types.js";
 export declare class FlipbookViewer implements FlipbookInstance {
     readonly element: HTMLElement;
     private readonly adopted;

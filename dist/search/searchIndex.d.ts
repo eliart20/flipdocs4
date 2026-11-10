@@ -1,4 +1,4 @@
-import type { NormalizedRect, PageText, SearchMatch, SearchOptions } from "../types";
+import type { NormalizedRect, PageText, SearchMatch, SearchOptions } from "../types.js";
 export interface ResolvedSearchOptions {
     matchCase: boolean;
     matchDiacritics: boolean;

@@ -1,5 +1,5 @@
-import type { PageStore } from "../engine/pageStore";
-import type { SearchHandle, SearchOptions, SearchProgress } from "../types";
+import type { PageStore } from "../engine/pageStore.js";
+import type { SearchHandle, SearchOptions, SearchProgress } from "../types.js";
 /** Pages in the order a reader would want them searched. */
 export declare function searchOrder(visible: number[], pageCount: number): number[];
 export declare class SearchService {

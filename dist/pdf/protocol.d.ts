@@ -1,4 +1,4 @@
-import type { FlipBookErrorCode, OutlineNode, PageText, PdfAssetOptions } from "../types";
+import type { FlipBookErrorCode, OutlineNode, PageText, PdfAssetOptions } from "../types.js";
 /**
  * Messages between the main thread and the raster worker. The same host
  * class (pdfHost.ts) answers them in the worker and, when the worker cannot
