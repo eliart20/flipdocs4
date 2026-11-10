@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Built output is committed so a GitHub install needs no build step.
+dist/** linguist-generated=true -diff
+*.png binary

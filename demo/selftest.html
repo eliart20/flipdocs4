@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flipdocs 4 self-test</title>
+    <style>
+      body {
+        margin: 16px;
+        background: #161b25;
+        color: #e8ecf3;
+        font: 13px/1.45 system-ui, sans-serif;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      td,
+      th {
+        padding: 4px 8px;
+        border-bottom: 1px solid #2a3242;
+        text-align: left;
+        vertical-align: top;
+      }
+      .pass {
+        color: #7be08a;
+      }
+      .fail {
+        color: #ff8080;
+      }
+      .skip {
+        color: #e6c36a;
+      }
+      #stage {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+      .mount {
+        width: 720px;
+        height: 480px;
+        background: #0f131b;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
+        font-size: 11px;
+        color: #a9b6cc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="summary">Running…</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Case</th>
+          <th>Result</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div id="stage"></div>
+    <script type="module" src="./selftest.ts"></script>
+  </body>
+</html>

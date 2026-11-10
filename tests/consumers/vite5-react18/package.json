@@ -1,0 +1,15 @@
+{
+  "name": "flipdocs4-consumer-vite5-react18",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "vite": "5.4.21"
+  }
+}

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Flipdocs 4 workbench</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font: 14px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #161b25;
+        color: #e8ecf3;
+      }
+      #app {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        height: 100svh;
+      }
+      #side {
+        overflow: auto;
+        padding: 12px;
+        border-right: 1px solid #2a3242;
+        background: #1b2230;
+      }
+      #side h1 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+      #side fieldset {
+        margin: 0 0 10px;
+        padding: 8px;
+        border: 1px solid #2f384a;
+        border-radius: 8px;
+      }
+      #side legend {
+        padding: 0 4px;
+        color: #9aa6ba;
+        font-size: 12px;
+      }
+      #side label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 4px 0;
+      }
+      #side select,
+      #side input[type="number"],
+      #side input[type="text"] {
+        max-width: 170px;
+        flex: 1;
+        min-width: 0;
+        padding: 4px 6px;
+        border: 1px solid #3a4459;
+        border-radius: 6px;
+        background: #121722;
+        color: inherit;
+        font: inherit;
+      }
+      #side input[type="range"] {
+        flex: 1;
+        min-width: 0;
+      }
+      #side button {
+        margin: 2px 2px 2px 0;
+        padding: 5px 9px;
+        border: 1px solid #3a4459;
+        border-radius: 6px;
+        background: #263044;
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      #side button:hover {
+        background: #31405c;
+      }
+      #side pre {
+        max-height: 260px;
+        margin: 0;
+        overflow: auto;
+        font: 11px/1.35 ui-monospace, Consolas, monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+        color: #b9c6dc;
+      }
+      #stage {
+        position: relative;
+        min-width: 0;
+        min-height: 0;
+        padding: 12px;
+      }
+      #reader {
+        width: 100%;
+        height: 100%;
+      }
+      @media (max-width: 760px) {
+        #app {
+          grid-template-columns: 1fr;
+          grid-template-rows: 1fr;
+        }
+        #side {
+          display: none;
+        }
+        #stage {
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <aside id="side"></aside>
+      <main id="stage"><div id="reader"></div></main>
+    </div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

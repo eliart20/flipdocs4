@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>flipdocs4 from a script tag</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #161b25; }
+      flip-book { height: 100vh; }
+    </style>
+    <!-- No bundler: the browser loads the package's own files as they are. -->
+    <script type="module" src="./node_modules/flipdocs4/dist/element.js"></script>
+  </head>
+  <body>
+    <flip-book id="book" src="http://127.0.0.1:5184/fx/pdf/range/p12.pdf"></flip-book>
+    <script type="module">
+      const book = document.getElementById("book");
+      book.addEventListener("ready", (event) => (window.flipbookReady = event.detail));
+      book.addEventListener("error", (event) => (window.flipbookError = String(event.detail)));
+    </script>
+  </body>
+</html>

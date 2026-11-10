@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Image-only startup</title>
+    <style>
+      html,
+      body,
+      #reader {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="reader"></div>
+    <script type="module">
+      // Opens an image-only book in a fresh document and reports every
+      // resource that was requested, so the parent can prove that nothing
+      // PDF-related was fetched.
+      import { createFlipbook } from "../src/core.ts";
+      const book = createFlipbook(document.getElementById("reader"), { transition: "none" });
+      await book.load({
+        type: "images",
+        pages: Array.from({ length: 6 }, (_, index) => `/fx/img/${index + 1}.png?w=400&h=560`),
+      });
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      parent.postMessage(
+        {
+          type: "flipdocs-images-ready",
+          resources: performance.getEntriesByType("resource").map((entry) => entry.name),
+        },
+        "*",
+      );
+    </script>
+  </body>
+</html>

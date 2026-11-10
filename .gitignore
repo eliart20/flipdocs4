@@ -1,0 +1,17 @@
+node_modules/
+*.tgz
+*.log
+.vite/
+coverage/
+# Large local test books never enter Git or the package.
+demo/public/books/
+tests/consumers/*/node_modules/
+tests/consumers/*/dist/
+tests/consumers/*/.next/
+tests/consumers/vite5-react18/index.html
+tests/consumers/vite5-react18/vite.config.js
+tests/consumers/vite5-react18/src/
+tests/consumers/*/package-lock.json
+captures/
+# Extra folders of real books for the workbench (machine-specific).
+demo/books.local.json
