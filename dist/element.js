@@ -1,8 +1,8 @@
 var p = Object.defineProperty;
 var f = (e, i, t) => i in e ? p(e, i, { enumerable: !0, configurable: !0, writable: !0, value: t }) : e[i] = t;
 var r = (e, i, t) => f(e, typeof i != "symbol" ? i + "" : i, t);
-import { a as g, c as m } from "./flipdocs-core-TaQJCRCq.js";
-import { D as k, b as w, F as N, T as P, d as T, e as I, f as D, g as _, i as G } from "./flipdocs-core-TaQJCRCq.js";
+import { a as g, c as m } from "./flipdocs-core-BWCZhjD2.js";
+import { D as k, b as w, F as N, T as P, d as T, e as I, f as D, g as _, i as G } from "./flipdocs-core-BWCZhjD2.js";
 const l = "flipdocs-style";
 function b() {
   if (typeof document > "u" || document.getElementById(l)) return;

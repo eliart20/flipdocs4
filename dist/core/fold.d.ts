@@ -35,7 +35,9 @@
  * the sheet first bends gently from the binding and tightens as the pull
  * grows. Past the nominal fold's reach (s would exceed S) the line stays at
  * the binding corner and the radius shrinks, reaching zero exactly on the
- * boundary L = 2S, which is where taut paper would stop. That boundary is the
+ * boundary L = 2S, which is where taut paper would stop. (The solver stops a
+ * little short of it, keeping a small roll, except in the two resting
+ * states; see the reserve below.) That boundary is the
  * intersection of two discs centred on the binding corners; targets outside
  * it are pulled back along the ray from the binding point level with the
  * grab, which is continuous and leaves reachable targets untouched.

@@ -1,4 +1,4 @@
-import { D as o, b as s, F as a, T as i, d as N, e as c, c as t, f as E, g as F, i as S } from "./flipdocs-core-TaQJCRCq.js";
+import { D as o, b as s, F as a, T as i, d as N, e as c, c as t, f as E, g as F, i as S } from "./flipdocs-core-BWCZhjD2.js";
 export {
   o as DEFAULT_STRINGS,
   s as DIAGNOSTIC_POSE_NAMES,

@@ -1,6 +1,6 @@
 import { forwardRef as d, useRef as i, useEffect as u, useImperativeHandle as m, createElement as f } from "react";
-import { h as E, D as P, F as h } from "./flipdocs-core-TaQJCRCq.js";
-import { b as C, T as b, d as A, e as B, c as x, f as y, g as G, i as O } from "./flipdocs-core-TaQJCRCq.js";
+import { h as E, D as P, F as h } from "./flipdocs-core-BWCZhjD2.js";
+import { b as C, T as b, d as A, e as B, c as x, f as y, g as G, i as O } from "./flipdocs-core-BWCZhjD2.js";
 const D = d(function(t, l) {
   const c = i(null), a = i(null), s = i(t);
   return s.current = t, u(() => {

@@ -35,7 +35,9 @@
  * the sheet first bends gently from the binding and tightens as the pull
  * grows. Past the nominal fold's reach (s would exceed S) the line stays at
  * the binding corner and the radius shrinks, reaching zero exactly on the
- * boundary L = 2S, which is where taut paper would stop. That boundary is the
+ * boundary L = 2S, which is where taut paper would stop. (The solver stops a
+ * little short of it, keeping a small roll, except in the two resting
+ * states; see the reserve below.) That boundary is the
  * intersection of two discs centred on the binding corners; targets outside
  * it are pulled back along the ray from the binding point level with the
  * grab, which is continuous and leaves reachable targets untouched.
@@ -92,6 +94,7 @@ export const SAG_FLOOR = 0.6;
 const MIN_GRAB_U = 0.04;
 const OVERHANG_GAIN = 2.5;
 const MAX_RADIUS = 50;
+const ASKEW_SPAN = 0.1;
 const TINY = 1e-7;
 
 const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
@@ -146,6 +149,14 @@ export function flatFold(grabU = 0, grabV = 0): FoldState {
   };
 }
 
+/**
+ * 0…1: how far the grab is held off its own row, saturating at a tenth of
+ * the page height. Zero in both resting states, where the sheet lies flat.
+ */
+function askewness(dy: number, h: number): number {
+  return smooth01(clamp01(Math.abs(dy) / (ASKEW_SPAN * h)));
+}
+
 /** Shading gate: rises over the first 6% of a turn, falls over the last 14%. */
 export function turnEnvelope(progress: number): number {
   const rise = smooth01(clamp01(progress / 0.06));
@@ -169,10 +180,14 @@ export function solveFold(
   const gu = Math.min(w, Math.max(MIN_GRAB_U * w, grab.u));
   const gv = Math.min(half, Math.max(-half, grab.v));
 
-  // Reserve a little lift in the reach limit, faded out at both ends so the
-  // sheet can still lie flat at rest and when fully turned.
+  // Reserve a little lift in the reach limit. It fades out only where the
+  // sheet can really lie flat: at rest and fully turned, with the grab back
+  // on its own row. A grab held off its row at either end is paper pulled
+  // taut and askew; without the reserve it would crease dead flat there.
   const requested = clamp01((gu - target.x) / (2 * gu));
-  const reserve = Math.min(tuning.minLift / 2, (0.6 * gu) / Math.PI) * Math.sin(Math.PI * requested);
+  const reserve =
+    Math.min(tuning.minLift / 2, (0.6 * gu) / Math.PI) *
+    Math.max(Math.sin(Math.PI * requested), askewness(target.y - gv, h));
 
   const topBudget = gu * gu + (gv - half) * (gv - half);
   const bottomBudget = gu * gu + (gv + half) * (gv + half);
@@ -259,7 +274,8 @@ export function solveFold(
     grabZ,
     progress,
     sag: tuning.sagDepth > 0 ? tuning.sagDepth * Math.sin(Math.PI * progress) : 0,
-    envelope: turnEnvelope(progress),
+    // Paper held askew at either end is still off the page, so it keeps its shading.
+    envelope: Math.max(turnEnvelope(progress), askewness(ty - gv, h)),
     clamped,
     bend,
   };

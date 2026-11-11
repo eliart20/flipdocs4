@@ -25,22 +25,45 @@ float sdSheet(vec2 m) {
   return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0);
 }
 
+// How high the paper rises past the fold line at a point on that line, as a
+// share of the full lift 2r. Follows the line's ruling out along uN to where
+// the sheet ends: far enough and the paper goes right over (1); near either
+// end of the fold, where the line leaves the sheet, it barely lifts (0).
+float riseAt(vec2 foot) {
+  vec2 n = vec2(abs(uN.x) < 1e-5 ? 1e-5 : uN.x, abs(uN.y) < 1e-5 ? 1e-5 : uN.y);
+  vec2 a = (vec2(0.0, -0.5 * uPage.y) - foot) / n;
+  vec2 b = (vec2(uPage.x, 0.5 * uPage.y) - foot) / n;
+  float enter = max(max(min(a.x, b.x), min(a.y, b.y)), 0.0);
+  float leave = min(max(a.x, b.x), max(a.y, b.y));
+  float chord = leave - enter;
+  if (chord <= 0.0) return 0.0;
+  float t = clamp(leave / max(PI * uR, 0.02 * uPage.x), 0.0, 1.0);
+  float height = sin(0.5 * PI * t);
+  return height * height * clamp(chord / (0.03 * uPage.x), 0.0, 1.0);
+}
+
+// Shadow of the flap lying over the fixed part of the sheet, for a point q
+// on that side of the fold line (s <= 0). The flap is found by reflecting q
+// back into material space.
+float flapShadow(vec2 q, float s) {
+  float soft = 1.5 * uR + 0.012 * uPage.x;
+  vec2 m = q + (PI * uR - 2.0 * s) * uN;
+  float outside = max(sdSheet(m), 0.0);
+  return uShadow * 0.8 * exp(-outside / soft);
+}
+
 // Contact shadow the turning sheet casts on the plane z = 0, for a point q
-// given in the sheet's own frame. Two analytic parts: the lifted flap (found
-// by reflecting q back into material space) and the roll beside the fold.
+// given in the sheet's own frame: the flap on one side of the fold line, the
+// roll on the other. The roll's shadow is as deep and as wide as the paper
+// is high beside it, so it thins out toward the ends of the fold instead of
+// running at full strength to the page edge.
 float foldShadow(vec2 q) {
   float s = dot(uN, q) - uD;
-  float lift = 2.0 * uR;
-  float soft = 0.75 * lift + 0.012 * uPage.x;
-  if (s <= 0.0) {
-    vec2 m = q + (PI * uR - 2.0 * s) * uN;
-    float outside = max(sdSheet(m), 0.0);
-    return uShadow * 0.8 * exp(-outside / soft);
-  }
-  vec2 foot = q - s * uN;
-  float along = exp(-max(sdSheet(foot), 0.0) / soft);
-  float beyond = max(s - uR, 0.0);
-  return uShadow * along * exp(-beyond / (1.3 * soft));
+  if (s <= 0.0) return flapShadow(q, s);
+  float rise = riseAt(q - s * uN);
+  float soft = 1.5 * uR * rise + 0.012 * uPage.x;
+  float beyond = max(s - uR * min(1.0, 2.0 * rise), 0.0);
+  return uShadow * smoothstep(0.0, 0.5, rise) * exp(-beyond / (1.3 * soft));
 }
 
 // Soft darkening toward the binding, the same on resting and turning paper.
@@ -151,11 +174,15 @@ uniform float uHasTurned;
 uniform vec2 uFitRest;
 uniform vec2 uFitTurned;
 uniform float uCurl;
+uniform float uSeamHalf;
 varying vec2 vMaterial;
 varying vec3 vNormal;
 varying vec3 vPosition;
 varying float vS;
 void main() {
+  // Paper still lying on the binding leaves the seam showing, as a resting
+  // page does. Paper that has lifted covers it.
+  if (vS <= 0.0 && vMaterial.x < uSeamHalf) discard;
   bool restFace = dot(vNormal, cameraPosition - vPosition) > 0.0;
   float u = vMaterial.x / uPage.x;
   float v = vMaterial.y / uPage.y + 0.5;
@@ -172,10 +199,14 @@ void main() {
     color = restColor;
     // Inside of the bend: darker the further the paper tilts away from the
     // viewer, so a shallow hand-bend is lightly shaded and a tight roll
-    // deeply. Then the flap's shadow on the part still lying flat.
+    // deeply. Then the shadow of the flap overhead. On the part lying flat
+    // it is taken where the paper is; on the bend it is taken at the crease
+    // below, so the inside of the curl starts exactly as dark as the paper
+    // it rises from and never shows as a bright sliver beside it.
     float tilt = 1.0 - abs(normalize(vNormal).z);
     shade *= 1.0 - uCurl * 0.6 * pow(tilt, 0.8);
-    if (vS <= 0.0) shade *= 1.0 - foldShadow(vMaterial);
+    float past = max(vS, 0.0);
+    shade *= 1.0 - flapShadow(vMaterial - past * uN, vS - past);
   } else {
     color = turnedColor;
     // Outside of the curl: darkest at the silhouette, easing over the top of

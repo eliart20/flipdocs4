@@ -27,9 +27,9 @@ node tests/consumers/run.mjs            # pack, install into outside apps, build
 
 | Suite | Result |
 | --- | --- |
-| Unit tests (`tests/*.test.ts`) | 141 pass |
+| Unit tests (`tests/*.test.ts`) | 142 pass |
 | Browser acceptance cases (`demo/selftest.ts`) | 32 pass, 0 skipped |
-| Real input (`tests/browser/interaction.mjs`) | 46 pass |
+| Real input (`tests/browser/interaction.mjs`) | 52 pass. Six of them read pixels back from blank white pages: the seam at rest, under a sheet resting on the binding and under a page pulled flat across it; and the shading on either side of the crease inside a curl |
 | Consumer builds (`tests/consumers/run.mjs`) | all pass: Vite 7 + React 19, Vite 5 + React 18, script tag with no bundler |
 | Declarations from a consumer (same script) | pass under bundler resolution and under Node16 resolution, from an ES module and from CommonJS through a dynamic import |
 | Next.js 15.5.18 | opens with both workers under webpack (`next build` + `next start`) and Turbopack (`next dev --turbopack`); checked by hand with a scratch app, not part of the scripts |

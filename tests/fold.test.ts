@@ -215,6 +215,26 @@ describe("fold solver", () => {
     expect(end.r).toBeLessThan(1e-6);
   });
 
+  it("keeps a small roll when the paper is pulled taut and askew", () => {
+    // Past the fully turned position and well off the grab's own row: the
+    // limit of reach. Creased dead flat there, the flipped page lies in the
+    // plane of the book and the crease is a hard line through the mesh.
+    const grab = { u: 0.69, v: -0.36 };
+    const taut = solveFold(dims, full, grab, { x: -0.9, y: 0.4 });
+    expect(taut.clamped).toBe(true);
+    expect(2 * taut.r).toBeGreaterThanOrEqual(full.minLift * 0.95);
+    // It is still paper off the page, so it keeps its shading.
+    expect(taut.envelope).toBeGreaterThan(0.9);
+    // The same holds at the start of a turn, for a grab pushed off its row.
+    const pushed = solveFold(dims, full, grab, { x: grab.u, y: grab.v + 0.5 });
+    expect(pushed.clamped).toBe(true);
+    expect(2 * pushed.r).toBeGreaterThanOrEqual(full.minLift * 0.95);
+    // Back on its own row at either end the sheet still lies flat.
+    const landed = solveFold(dims, full, grab, { x: -grab.u, y: grab.v });
+    expect(landed.r).toBeLessThan(1e-6);
+    expect(landed.envelope).toBe(0);
+  });
+
   it("uses the nominal radius for a plain corner peel", () => {
     const fold = poseFold("forward-mid-turn", full);
     expect(fold.r).toBeCloseTo(full.radius, 9);

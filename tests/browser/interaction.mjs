@@ -296,6 +296,117 @@ try {
   s = await snap(tab);
   check(s.zoom === 1 && s.pan[0] === 0 && s.pan[1] === 0, "resetting zoom clears the pan");
   await tab.close();
+
+  /* ------------------------------------------------------------------ */
+  /* What is drawn: the seam, and the shading inside a curl              */
+  /* ------------------------------------------------------------------ */
+  // Blank white pages, so every pixel read back is shading and nothing else.
+  const look = await open(desktop, "", 4);
+  await look.evaluate(async () => {
+    const blank = new OffscreenCanvas(600, 800);
+    const context = blank.getContext("2d");
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 600, 800);
+    const pages = [];
+    for (let i = 0; i < 8; i++) pages.push(await createImageBitmap(blank));
+    await window.flipbook.load({ type: "images", pages });
+    await window.flipbook.goToPage(4);
+  });
+  await look.waitForFunction(() => window.flipbook.getSnapshot().activeWork.queued === 0 && window.flipbook.getSnapshot().activeWork.running === null, null, { timeout: 30_000 });
+  await settle(look, 500);
+  const lg = await geometry(look);
+  const lmouse = look.mouse;
+  const height = lg.ph / lg.pw;
+  /** Screen position of a point on the right-hand page: u out from the spine, v up from the middle, in page widths. */
+  const onRight = (u, v) => ({ x: lg.cx + u * lg.pw, y: lg.cy - v * lg.pw });
+  /** Pixels of a screen rectangle as RGBA bytes, decoded in the page. */
+  const pixels = async (clip) => {
+    const png = await look.screenshot({ clip });
+    return look.evaluate(async (base64) => {
+      const bytes = Uint8Array.from(atob(base64), (character) => character.charCodeAt(0));
+      const bitmap = await createImageBitmap(new Blob([bytes], { type: "image/png" }));
+      const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+      const context = canvas.getContext("2d");
+      context.drawImage(bitmap, 0, 0);
+      return { width: bitmap.width, height: bitmap.height, data: Array.from(context.getImageData(0, 0, bitmap.width, bitmap.height).data) };
+    }, png.toString("base64"));
+  };
+  /** Share of the binding, top to bottom, where the dark seam is what shows. */
+  const seamShowing = async () => {
+    const image = await pixels({ x: Math.floor(lg.cx), y: Math.round(lg.cy - lg.ph / 2) + 6, width: 1, height: Math.round(lg.ph) - 12 });
+    let dark = 0;
+    for (let i = 0; i < image.height; i++) {
+      if (image.data[4 * i] < 80 && image.data[4 * i + 1] < 90 && image.data[4 * i + 2] < 105) dark += 1;
+    }
+    return dark / image.height;
+  };
+  /** Mean brightness, 0–255, of a 3 × 3 patch. */
+  const brightness = async (point) => {
+    const image = await pixels({ x: Math.round(point.x) - 1, y: Math.round(point.y) - 1, width: 3, height: 3 });
+    let sum = 0;
+    for (let i = 0; i < image.width * image.height; i++) sum += (image.data[4 * i] + image.data[4 * i + 1] + image.data[4 * i + 2]) / 3;
+    return sum / (image.width * image.height);
+  };
+  const hold = async (from, to) => {
+    await lmouse.move(from.x, from.y);
+    await lmouse.down();
+    await lmouse.move(to.x, to.y, { steps: 24 });
+    await look.waitForTimeout(300);
+    return snap(look);
+  };
+  const letGo = async (from) => {
+    await lmouse.move(from.x, from.y, { steps: 10 });
+    await lmouse.up();
+    await settle(look, 1300);
+  };
+
+  const seamAtRest = await seamShowing();
+  check(seamAtRest > 0.97, "at rest the seam runs the height of the binding", `${(seamAtRest * 100).toFixed(0)}% of it`);
+
+  // An ordinary corner peel: the sheet still lies on the binding, seam as before.
+  const cornerPress = onRight(0.97, -0.47 * height);
+  let held = await hold(cornerPress, onRight(0.45, -0.2 * height));
+  const seamInPeel = await seamShowing();
+  check(held.state === "drag" && Math.abs(seamInPeel - seamAtRest) < 0.01, "a sheet resting on the binding leaves the seam as it was", `${(seamInPeel * 100).toFixed(0)}% showing`);
+
+  // The inside of the curl, near the end of the fold where it is in view.
+  // Just past the crease the paper has barely tilted, so it should look like
+  // the paper just before the crease, which lies in the roll's shadow. It
+  // must never be the brighter of the two: that reads as a glowing sliver.
+  if (held.sheet && !held.sheet.clamped) {
+    const [gu, gv] = held.sheet.grab;
+    const [tx, ty] = held.sheet.target;
+    const pull = Math.hypot(gu - tx, gv - ty);
+    const nx = (gu - tx) / pull;
+    const ny = (gv - ty) / pull;
+    const radius = held.sheet.lift / 2;
+    const d = nx * gu + ny * gv - (pull + Math.PI * radius) / 2;
+    // Where the fold line meets the bottom edge, then a little way along it
+    // into the page: far enough that the flap's shadow is plain to see, not
+    // so far that the roll closes over the crease.
+    const tipAlong = (-height / 2 - d * ny) / nx;
+    const along = tipAlong + (0.6 * Math.PI * radius * Math.abs(ny)) / nx;
+    const crease = { x: d * nx - along * ny, y: d * ny + along * nx };
+    const before = await brightness(onRight(crease.x - 0.016 * nx, crease.y - 0.016 * ny));
+    const inside = await brightness(onRight(crease.x + 0.016 * nx, crease.y + 0.016 * ny));
+    const clear = await brightness(onRight(0.3, 0.25 * height));
+    check(before < clear - 8, "the flap shades the paper beside the crease", `${before.toFixed(0)} against ${clear.toFixed(0)} in the open`);
+    check(inside <= before + 3, "the inside of the curl is no brighter than the paper it rises from", `${inside.toFixed(0)} inside, ${before.toFixed(0)} before the crease`);
+  } else {
+    check(false, "a corner peel was held for the shading checks", JSON.stringify(held.sheet));
+  }
+  await letGo(cornerPress);
+
+  // Pulled taut and askew across the binding: the flipped page lies almost in
+  // the plane of the book, and must still cover the seam it lies on.
+  const midPress = onRight(0.69, -0.28 * height);
+  held = await hold(midPress, onRight(-0.7, 0.25 * height));
+  const minimumLift = await look.evaluate(() => window.flipbook.getState().tuning?.minimumLift ?? 0.018);
+  check(held.sheet?.clamped === true && held.sheet.lift >= 0.9 * minimumLift, "paper pulled taut keeps a small roll instead of creasing flat", `lift ${held.sheet?.lift.toFixed(4)}`);
+  const seamUnderTaut = await seamShowing();
+  check(seamUnderTaut < 0.35, "a page pulled flat across the binding covers the seam", `${(seamUnderTaut * 100).toFixed(0)}% still showing`);
+  await letGo(midPress);
+  await look.close();
   await desktop.close();
 
   /* ------------------------------------------------------------------ */

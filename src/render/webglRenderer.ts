@@ -42,6 +42,12 @@ import {
  * one subdivided sheet that the vertex shader folds. Nothing is lit by scene
  * lights and there are no shadow maps; all shading is analytic, in the
  * fragment shaders. It draws only when asked.
+ *
+ * Order, back to front: shadow, resting pages, seam, sheet. The seam belongs
+ * to the book lying open, so paper that has left the page always covers it,
+ * however low that paper lies. Where the sheet still rests on the binding it
+ * leaves the seam's width undrawn, so the seam looks the same with or without
+ * a sheet in play.
  */
 
 const PAPER: [number, number, number] = [0.992, 0.988, 0.976];
@@ -233,10 +239,11 @@ export class WebGLFlipRenderer implements FlipRenderer {
 
     this.seam = new Mesh(
       new PlaneGeometry(1, height),
-      new MeshBasicMaterial({ color: 0x222a35, depthTest: true, depthWrite: false }),
+      new MeshBasicMaterial({ color: 0x222a35, depthTest: false, depthWrite: false }),
     );
-    this.seam.position.z = 0.0012 * width;
-    this.seam.renderOrder = 2;
+    // After the resting pages, before the sheet. Not a depth test: a sheet
+    // pulled taut lies as good as flat across the binding and would lose one.
+    this.seam.renderOrder = 0.5;
     this.scene.add(this.seam);
 
     this.shadow = new Mesh(
@@ -287,6 +294,7 @@ export class WebGLFlipRenderer implements FlipRenderer {
           uFitRest: { value: new Vector2(1, 1) },
           uFitTurned: { value: new Vector2(1, 1) },
           uCurl: { value: 0 },
+          uSeamHalf: { value: 0 },
         },
         side: DoubleSide,
         depthTest: true,
@@ -431,6 +439,7 @@ export class WebGLFlipRenderer implements FlipRenderer {
       (uniforms.uGrab.value as Vector2).set(sheet.fold.grabU, sheet.fold.grabV);
       uniforms.uSag.value = sheet.fold.active ? sheet.fold.sag : 0;
       uniforms.uCurl.value = frame.shadowOpacity * sheet.fold.envelope;
+      uniforms.uSeamHalf.value = frame.seam.visible ? (0.5 * frame.seam.cssWidth) / layout.pxPerWorld : 0;
     }
 
     this.seam.visible = frame.seam.visible && !slide;
